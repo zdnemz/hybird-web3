@@ -1,0 +1,36 @@
+echo "🚀 Running pre-commit checks..."
+
+echo "🧠 Running TypeScript typecheck..."
+if ! npm run typecheck; then
+  echo "❌ Typecheck failed. Commit aborted."
+  exit 1
+else
+  echo "✅ Typecheck passed."
+fi
+
+echo "📦 Building project..."
+if ! npm run build; then
+  echo "❌ Build failed. Commit aborted."
+  exit 1
+fi
+
+echo "✨ Formatting staged files with Prettier..."
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | sed 's| |\\ |g')
+
+if [ -n "$STAGED_FILES" ]; then
+  prettier $STAGED_FILES --write --ignore-unknown
+  git add $STAGED_FILES
+  echo "✅ Files formatted & staged again."
+else
+  echo "⚠️ No files to format."
+fi
+
+echo "🔍 Running lint checks..."
+if ! npm run lint; then
+  echo "❌ Lint failed. Commit aborted."
+  exit 1
+else
+  echo "✅ Lint passed."
+fi
+
+echo "✅ Pre-commit checks passed."
