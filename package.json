@@ -3,16 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev:hardhat": "hardhat node",
+    "dev:next": "next dev",
+    "dev": "concurrently -n \"BLOCKCHAIN,WEB\" -c \"cyan,green\" \"npm run dev:hardhat\" \"npm run dev:next\"",
+    "clean": "hardhat clean",
+    "compile": "hardhat compile",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "postinstall": "prisma generate",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write --ignore-unknown .",
     "prepare": "husky"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
     "hono": "^4.11.1",
+    "ioredis": "^5.8.2",
     "next": "16.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3"
@@ -32,6 +40,7 @@
     "husky": "^9.1.7",
     "prettier": "^3.7.4",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "prisma": "^7.2.0",
     "tailwindcss": "^4",
     "typescript": "~5.8.0",
     "viem": "^2.43.3"
