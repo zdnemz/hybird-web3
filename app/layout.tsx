@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+import WagmiProvider from "@/components/providers/wagmi";
+import AuthProvider from "@/components/providers/auth";
+import ClientProvider from "@/components/providers/client";
+import { Toaster } from "react-hot-toast";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -27,7 +32,35 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ClientProvider>
+          <Toaster
+            position="bottom-right"
+            reverseOrder={false}
+            gutter={8}
+            containerClassName=""
+            containerStyle={{}}
+            toasterId="default"
+            toastOptions={{
+              className: "",
+              duration: 5000,
+              removeDelay: 1000,
+              style: {
+                background: "#363636",
+                color: "#fff",
+              },
+              success: {
+                duration: 3000,
+                iconTheme: {
+                  primary: "green",
+                  secondary: "black",
+                },
+              },
+            }}
+          />
+          <WagmiProvider>
+            <AuthProvider>{children}</AuthProvider>
+          </WagmiProvider>
+        </ClientProvider>
       </body>
     </html>
   );

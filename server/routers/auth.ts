@@ -9,6 +9,7 @@ import JWT from "@/lib/app/jwt";
 import { deleteCookie, setCookie } from "hono/cookie";
 import env from "@/configs/env";
 import { authService } from "../services/auth";
+import prisma from "@/lib/app/db";
 
 export const auth = new Hono();
 
@@ -36,6 +37,7 @@ auth.post(
       });
 
       const data = await c.req.json();
+      console.log(data);
 
       const validated = await validate(schema, data);
       if (!validated.success) return response(c, 400, validated.error);
@@ -62,6 +64,11 @@ auth.post(
         { expiresIn: "1d" },
       );
 
+      const isRegistered = !!(await prisma.user.findUnique({
+        where: { walletAddress: result.data.address },
+        select: { walletAddress: true },
+      }));
+
       const sessionKey = `session:${result.data.address}`;
       await redis.setex(sessionKey, 60 * 60 * 24, token);
 
@@ -72,7 +79,7 @@ auth.post(
         secure: env.APP.NODE_ENV === "production",
       });
 
-      return response(c, 200, { address: result.data.address });
+      return response(c, 200, { address: result.data.address, isRegistered });
     },
     { name: "auth-verify" },
   ),

@@ -2,3 +2,5 @@
 .husky
 cache
 artifacts
+
+node_modules
